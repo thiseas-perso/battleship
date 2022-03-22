@@ -1,0 +1,22 @@
+{
+  "name": "battleship",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiseaskambas/battleship.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thiseaskambas/battleship/issues"
+  },
+  "homepage": "https://github.com/thiseaskambas/battleship#readme",
+  "devDependencies": {
+    "jest": "^27.5.1"
+  }
+}
