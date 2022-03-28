@@ -1,0 +1,96 @@
+body {
+   background-color: black;
+   margin: 0;
+   color: aliceblue;
+   font-family: Arial, Helvetica, sans-serif;
+}
+main{
+   display: flex;
+   justify-content: space-around;
+   width: 100%;
+   margin-top: 10rem;
+}
+
+.square{
+   width: calc(100%);
+    padding-bottom: 100%;
+    background-color: hsl(195, 53%, 79%);
+}
+
+.square:hover{
+   background-color: hsl(195, 53%, 69%);
+   cursor: pointer;
+}
+
+
+#leftBoard, #rightBoard{
+   min-width: fit-content;
+   min-height: auto;
+   display: grid;
+   grid-template-columns: repeat(10, 4.5vw);
+   grid-template-rows: repeat(10, 4.5vw);
+   gap: 1px;
+}
+
+form{
+   display: flex;
+   flex-direction: column;
+   max-width: 15rem;
+   margin-left: auto;
+   margin-right: auto;
+   gap: 1rem;
+   margin-top: 2rem;
+   align-items: center;
+   font-size: 1.5rem;
+}
+
+form button{
+   max-width: fit-content;
+   font-size: 1.2rem;
+   padding: 0.2rem 1rem;
+}
+
+.ship-display{
+   margin-top: 1rem;
+   width: max-content;
+}
+
+.ship-display-row{
+   display: flex;
+   min-width: fit-content;
+   align-items: center;
+}
+
+.ship-display-row:hover {
+   border: 2px solid red;
+}
+
+.selected{
+   border: 2px solid red;
+}
+.ship-part{
+   width: 2rem;
+   height: 2rem;
+   background-color: blue;
+   border-radius: 100%;
+}
+
+.ship-count{
+   display: inline-block;
+   width: max-content;
+   font-size: 1.2rem;
+   margin-left: 1rem;
+}
+
+.hidden{
+   display: none;
+}
+
+.selectOrient{
+   width: 100%;
+}
+
+.leftScreen{
+   display: flex;
+   flex-direction: column;
+}

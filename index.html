@@ -6,10 +6,28 @@
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Document</title>
+   <link rel="stylesheet" href="style.css">
+
+
 </head>
 
 <body>
+   <main id="boards">
+      <div id="leftScreen" class="screen">
+         <div id="leftBoard" class="board"></div>
+      </div>
 
+      <div id="rightScreen" class="screen">
+         <div id="rightBoard" class="board"></div>
+      </div>
+
+   </main>
+   <form action="" autocomplete="off">
+      <label for="player-name">Your Name</label>
+      <input type="text" id="player-name" name="player-name">
+      <button type="submit">Play</button>
+   </form>
+   <script src="index.js" type="module"></script>
 </body>
 
 </html>
