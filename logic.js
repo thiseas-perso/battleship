@@ -85,8 +85,10 @@ function createGameboard() {
             console.log("placing : ", { y: coordinates.y, x: coordinates.x, name: ship.name, rotated: coordinates.rotated })
             this.placeShip(coordinates.y, coordinates.x, ship, coordinates.rotated)
             ship.quantity--;
+            return true
          } else {
             console.log('not possible')
+            return false
          }
          // }
          // })

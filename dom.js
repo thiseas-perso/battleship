@@ -25,9 +25,7 @@ function generateBoards(board) {
 generateBoards(leftBoard);
 generateBoards(rightBoard);
 
-
-
-function displayShips(player) {
+function displayButtons(player) {
    let selectOrient = document.createElement('div')
    selectOrient.classList.add('selectOrient')
    let selectOrientationHor = document.createElement('input')
@@ -47,18 +45,24 @@ function displayShips(player) {
    let verLabel = document.createElement('label')
    verLabel.setAttribute('for', 'ver')
    verLabel.innerText = 'Vertical'
+   let screen = player.name == null ? rightScreen : leftScreen;
+   selectOrient.appendChild(horLabel)
+   selectOrient.appendChild(selectOrientationHor)
+   selectOrient.appendChild(verLabel)
+   selectOrient.appendChild(selectOrientationVer)
+   screen.appendChild(selectOrient)
+}
 
+function displayShips(player) {
 
    let screen = player.name == null ? rightScreen : leftScreen;
    let list = document.createElement('div')
    list.setAttribute('class', 'ship-display')
 
-
    player.gameboard.shipsStart.forEach(ship => {
       let row = document.createElement('div')
       row.setAttribute('class', 'ship-display-row')
       row.setAttribute('id', `${ship.name}X${ship.quantity}`)
-
 
 
       for (let i = 0; i < ship.length; i++) {
@@ -74,11 +78,6 @@ function displayShips(player) {
       list.appendChild(row)
    })
 
-   selectOrient.appendChild(horLabel)
-   selectOrient.appendChild(selectOrientationHor)
-   selectOrient.appendChild(verLabel)
-   selectOrient.appendChild(selectOrientationVer)
-   screen.appendChild(selectOrient)
    screen.appendChild(list)
 }
 
@@ -94,63 +93,77 @@ form.addEventListener('submit', function (e) {
 })
 
 
+
+
+
+
 function selectCoordinates(player) {
+   let ships = selectShips()
    const coordinates = {
       x: null,
       y: null,
       rotated: null
    };
+
    const squares = leftBoard.querySelectorAll('.square');
    squares.forEach(square => {
       square.addEventListener('click', (e) => {
-         let orientation = document.querySelector('input[name="orient"]:checked').value
          coordinates.y = parseInt(e.target.id[1])
          coordinates.x = parseInt(e.target.id[4])
-         coordinates.rotated = document.querySelector('input[name="orient"]:checked').value
-         // return ({ y: parseInt(e.target.id[1]), x: parseInt(e.target.id[4]), rotated: orientation == 0 ? false : true })
-
+         coordinates.rotated = document.querySelector('input[name="orient"]:checked').value == 0 ? false : true
+         placeShips(player, ships, coordinates)
+         ships = selectShips()
       })
    })
-   console.log(coordinates)
+
 }
 
 
 function selectShips() {
    let ships = document.querySelectorAll('.ship-display-row')
+   let shipsArr = Array.from(ships)
+   let index = shipsArr.findIndex((element) => parseInt(element.id[element.id.length - 1]) > 0)
+   if (index >= 0) {
+      ships[index].classList.add('selected')
+   } else {
+      console.log('start playing')
+   }
    ships.forEach(ship => ship.addEventListener('click', (e) => {
       ships.forEach(el => el.classList.remove('selected'));
       ship.classList.add('selected')
    }))
+   return shipsArr
 }
 
 
-export { generateBoards, leftBoard, rightBoard, displayShips, selectShips }
+function placeShips(player, ships, coordinates) {
+   let total = ships.reduce((total, item) => parseInt(item.id[item.id.length - 1]) + total, 0);
+   let realTotal = player.gameboard.shipsStart.reduce((total, item) => item.quantity + total, 0)
+   let selected = document.querySelector('.selected')
+   let ship = player.gameboard.shipsStart.find(element => selected.id.includes(element.name));
+
+   if (realTotal > 0 && player.gameboard.placeHumanShips(coordinates, ship)) {
+      let old = document.querySelector('.ship-display')
+      leftScreen.removeChild(old)
+      displayShips(player)
+      console.log('placed!! ', selected)
+
+   } else {
+      let old = document.querySelector('.ship-display')
+      leftScreen.removeChild(old)
+      displayShips(player)
+      console.log('try again')
+   }
+   // console.log({ ships, realTotal, total, ship, selected, coordinates })
+}
 
 
-// row.addEventListener('click', (e) => {
-      //    let rows = document.querySelectorAll('.ship-display-row')
-      //    rows.forEach(el => el.classList.remove('selected'))
-      //    row.classList.add('selected')
+export { generateBoards, leftBoard, rightBoard, displayShips, selectShips, selectCoordinates, displayButtons }
 
 
-      //    if (ship.quantity > 0) {
-      //       let coordinates = {
-      //          y: null,
-      //          x: null,
-      //          rotated: null
-      //       };
-      //       const squares = leftBoard.querySelectorAll('.square');
-      //       squares.forEach(square => {
-      //          square.addEventListener('click', (e) => {
-      //             // console.log(ship)
-      //             // let orientation = document.querySelector('input[name="orient"]:checked').value
-      //             // coordinates.y = parseInt(e.target.id[1]);
-      //             // coordinates.x = parseInt(e.target.id[4]);
-      //             // coordinates.rotated = orientation == '0' ? false : true;
-      //             // console.log('coordinates', coordinates)
-      //             // player.gameboard.placeHumanShips(coordinates, ship)
+// let coordinates = selectCoordinates();
+//    if (!Object.values(coordinates).includes(null) && selectedName) {
+//       console.log(coordinates)
+//       total--
 
-      //          })
-      //       })
-      //    }
-      // })
+//    }

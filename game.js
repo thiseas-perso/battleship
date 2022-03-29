@@ -1,4 +1,4 @@
-import { generateBoards, leftBoard, rightBoard, displayShips, selectShips } from './dom.js'
+import { generateBoards, leftBoard, rightBoard, displayShips, selectShips, selectCoordinates, displayButtons } from './dom.js'
 import { createShip, createGameboard, createPlayer } from './logic.js'
 
 
@@ -7,11 +7,12 @@ function gameFlow(player) {
    const computer = createPlayer();
    humanPlayer.gameboard.initBoard();
    computer.gameboard.initBoard();
+   displayButtons(humanPlayer)
    displayShips(humanPlayer);
    computer.gameboard.placeComputerShips()
    console.log({ computer, humanPlayer })
-   selectShips()
-   // selectCoordinates()
+   selectCoordinates(humanPlayer)
+
 
 
    return { humanPlayer, computer }
