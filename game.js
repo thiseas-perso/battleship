@@ -1,4 +1,4 @@
-import { generateBoards, leftBoard, rightBoard, displayShips, selectShips, selectCoordinates, displayButtons } from './dom.js'
+import { displayShips, selectCoordinates, displayButtons, play } from './dom.js'
 import { createShip, createGameboard, createPlayer } from './logic.js'
 
 
@@ -12,11 +12,11 @@ function gameFlow(player) {
    computer.gameboard.placeComputerShips()
    console.log({ computer, humanPlayer })
    selectCoordinates(humanPlayer)
-
-
-
+   play()
    return { humanPlayer, computer }
 }
+
+
 
 
 export { gameFlow }

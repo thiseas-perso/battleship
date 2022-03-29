@@ -98,3 +98,7 @@ form button{
    display: flex;
    flex-direction: column;
 }
+
+.placed{
+   background-color: blue;
+}

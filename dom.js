@@ -81,24 +81,12 @@ function displayShips(player) {
    screen.appendChild(list)
 }
 
-form.addEventListener('submit', function (e) {
-   e.preventDefault()
-   gameFlow(playerName.value)
-
-   playerName.value = ''
-   form.setAttribute('class', 'hidden')
-   let banner = document.createElement('div')
-   banner.innerText = 'Place your ships by selecting the ship and clicking on the square where you want it to start taking place'
-   body.appendChild(banner)
-})
-
-
 
 
 
 
 function selectCoordinates(player) {
-   let ships = selectShips()
+   let ships = selectShips(player)
    const coordinates = {
       x: null,
       y: null,
@@ -112,20 +100,24 @@ function selectCoordinates(player) {
          coordinates.x = parseInt(e.target.id[4])
          coordinates.rotated = document.querySelector('input[name="orient"]:checked').value == 0 ? false : true
          placeShips(player, ships, coordinates)
-         ships = selectShips()
+         ships = selectShips(player)
       })
    })
 
 }
 
 
-function selectShips() {
+function selectShips(player) {
    let ships = document.querySelectorAll('.ship-display-row')
    let shipsArr = Array.from(ships)
    let index = shipsArr.findIndex((element) => parseInt(element.id[element.id.length - 1]) > 0)
    if (index >= 0) {
       ships[index].classList.add('selected')
    } else {
+      document.querySelector('#banner').innerText = 'Start playing!'
+      document.querySelector('.ship-display').remove()
+      document.querySelector('.selectOrient').remove()
+      leftBoard.replaceWith(leftBoard.cloneNode(true))
       console.log('start playing')
    }
    ships.forEach(ship => ship.addEventListener('click', (e) => {
@@ -137,7 +129,7 @@ function selectShips() {
 
 
 function placeShips(player, ships, coordinates) {
-   let total = ships.reduce((total, item) => parseInt(item.id[item.id.length - 1]) + total, 0);
+   // let total = ships.reduce((total, item) => parseInt(item.id[item.id.length - 1]) + total, 0);
    let realTotal = player.gameboard.shipsStart.reduce((total, item) => item.quantity + total, 0)
    let selected = document.querySelector('.selected')
    let ship = player.gameboard.shipsStart.find(element => selected.id.includes(element.name));
@@ -146,6 +138,7 @@ function placeShips(player, ships, coordinates) {
       let old = document.querySelector('.ship-display')
       leftScreen.removeChild(old)
       displayShips(player)
+      displayPositions(player)
       console.log('placed!! ', selected)
 
    } else {
@@ -154,16 +147,58 @@ function placeShips(player, ships, coordinates) {
       displayShips(player)
       console.log('try again')
    }
-   // console.log({ ships, realTotal, total, ship, selected, coordinates })
+
 }
 
 
-export { generateBoards, leftBoard, rightBoard, displayShips, selectShips, selectCoordinates, displayButtons }
+
+function displayPositions(player) {
+   let squares = leftScreen.querySelectorAll('.square')
+   for (let i = 0; i < player.gameboard.boardArr.length; i++) {
+      for (let j = 0; j < player.gameboard.boardArr[i].length; j++) {
+         if (player.gameboard.boardArr[i][j] !== null) {
+            squares.forEach((square) => {
+               if (parseInt(square.id[1]) == i && parseInt(square.id[4]) == j) {
+                  square.classList.remove('square')
+                  square.classList.add('placed')
+               }
+            })
+         }
+      }
+   }
+}
 
 
-// let coordinates = selectCoordinates();
-//    if (!Object.values(coordinates).includes(null) && selectedName) {
-//       console.log(coordinates)
-//       total--
+function play() {
+   const coordinates = {
+      x: null,
+      y: null,
+   };
+   const squares = rightBoard.querySelectorAll('.square');
+   squares.forEach(square => {
+      square.addEventListener('click', (e) => {
+         coordinates.y = parseInt(e.target.id[1])
+         coordinates.x = parseInt(e.target.id[4])
+         console.log(coordinates)
+      })
+   })
+}
 
-//    }
+form.addEventListener('submit', function (e) {
+   e.preventDefault()
+   gameFlow(playerName.value)
+   playerName.value = ''
+   form.setAttribute('class', 'hidden')
+   let banner = document.createElement('div')
+   banner.setAttribute('id', 'banner')
+   banner.innerText = 'Place your ships by selecting the ship and clicking on the square where you want it to start taking place'
+   body.appendChild(banner)
+})
+
+
+
+
+
+export { displayShips, selectCoordinates, displayButtons, play }
+
+
