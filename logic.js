@@ -79,10 +79,9 @@ function createGameboard() {
 
       },
       placeHumanShips(coordinates, ship) {
-         // this.shipsStart.forEach(ship => {
-         // while (ship.quantity > 0) {
+
          if (this.checkAvailable(ship, coordinates) === -1) {
-            console.log("placing : ", { y: coordinates.y, x: coordinates.x, name: ship.name, rotated: coordinates.rotated })
+
             this.placeShip(coordinates.y, coordinates.x, ship, coordinates.rotated)
             ship.quantity--;
             return true
@@ -90,9 +89,6 @@ function createGameboard() {
             console.log('not possible')
             return false
          }
-         // }
-         // })
-
       },
 
       placeComputerShips() {
@@ -145,16 +141,19 @@ function createGameboard() {
          if (!this.boardArr[hitY][hitX]) {
             this.boardArr[hitY][hitX] = 'missed'
             console.log('missed !!!')
+            return false
          } else {
             const succesHitIndex = this.boardArr[hitY][hitX].location.findIndex(position =>
                position.y == hitY && position.x == hitX)
             this.boardArr[hitY][hitX].hit(succesHitIndex);
-            this.allSuck();
+            this.allSunk();
             console.log('ship hit !!!')
+            return true
          }
       },
       allSunk() {
          if (this.shipsArr.length && this.shipsArr.every(ship => ship.sunk === true)) {
+            console.log('all sunk')
             return true
          } else {
             return false
@@ -169,26 +168,46 @@ function createPlayer(name = null) {
 
       gameboard: createGameboard(),
       plays: [],
+
+
       humanPlay(opponent, y, x) {
+         let result = {
+            played: false,
+            hitTarget: false
+         };
          if ((this.plays.findIndex(play => play.y === y && play.x === x)) === -1) {
-            opponent.gameboard.receiveAttack(y, x);
+            if (opponent.gameboard.receiveAttack(y, x)) {
+               result.hitTarget = true
+               result.played = true
+            } else {
+               result.played = true
+            }
             this.plays.push({ y, x });
+
          } else {
             console.log('already played')
-            this.computerPlay(opponent)
          }
+         return result
       },
 
       computerPlay(opponent) {
          let y = -1;
          let x = -1;
+
          function generateCoordinates() {
             y = Math.floor(Math.random() * 9)
             x = Math.floor(Math.random() * 9)
          }
+
          generateCoordinates();
+
+
          if ((this.plays.findIndex(play => play.y === y && play.x === x)) === -1) {
-            opponent.gameboard.receiveAttack(y, x);
+            console.log('computer playing ', { y, x })
+            if (opponent.gameboard.receiveAttack(y, x)) {
+               this.plays.push({ y, x });
+               this.computerPlay(opponent)
+            }
             this.plays.push({ y, x });
          } else {
             console.log('already played')

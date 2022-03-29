@@ -12,7 +12,7 @@ function gameFlow(player) {
    computer.gameboard.placeComputerShips()
    console.log({ computer, humanPlayer })
    selectCoordinates(humanPlayer)
-   play()
+   play(humanPlayer, computer)
    return { humanPlayer, computer }
 }
 

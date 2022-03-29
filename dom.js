@@ -118,7 +118,7 @@ function selectShips(player) {
       document.querySelector('.ship-display').remove()
       document.querySelector('.selectOrient').remove()
       leftBoard.replaceWith(leftBoard.cloneNode(true))
-      console.log('start playing')
+
    }
    ships.forEach(ship => ship.addEventListener('click', (e) => {
       ships.forEach(el => el.classList.remove('selected'));
@@ -139,7 +139,7 @@ function placeShips(player, ships, coordinates) {
       leftScreen.removeChild(old)
       displayShips(player)
       displayPositions(player)
-      console.log('placed!! ', selected)
+
 
    } else {
       let old = document.querySelector('.ship-display')
@@ -169,19 +169,27 @@ function displayPositions(player) {
 }
 
 
-function play() {
+function play(human, computer) {
+
    const coordinates = {
       x: null,
       y: null,
    };
-   const squares = rightBoard.querySelectorAll('.square');
-   squares.forEach(square => {
-      square.addEventListener('click', (e) => {
-         coordinates.y = parseInt(e.target.id[1])
-         coordinates.x = parseInt(e.target.id[4])
-         console.log(coordinates)
+   if (!human.gameboard.allSunk() || !computer.gameboard.allSunk()) {
+      const squares = rightBoard.querySelectorAll('.square');
+      squares.forEach(square => {
+         square.addEventListener('click', (e) => {
+            coordinates.y = parseInt(e.target.id[1])
+            coordinates.x = parseInt(e.target.id[4])
+
+            let humanPlayResult = human.humanPlay(computer, coordinates.y, coordinates.x)
+            if (humanPlayResult.played && !humanPlayResult.hitTarget) {
+               computer.computerPlay(human)
+            }
+         })
       })
-   })
+
+   }
 }
 
 form.addEventListener('submit', function (e) {
