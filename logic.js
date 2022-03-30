@@ -56,7 +56,7 @@ function createGameboard() {
       },
 
       placeShip(yStart, xStart, ship, rotated) {
-         // console.log('placing ', ship.name)
+
          if (!rotated) {
             let newShip = createShip(ship);
             newShip.rotated = rotated;
@@ -78,15 +78,15 @@ function createGameboard() {
          }
 
       },
+
       placeHumanShips(coordinates, ship) {
 
          if (this.checkAvailable(ship, coordinates) === -1) {
-
             this.placeShip(coordinates.y, coordinates.x, ship, coordinates.rotated)
             ship.quantity--;
             return true
          } else {
-            console.log('not possible')
+
             return false
          }
       },
@@ -97,10 +97,8 @@ function createGameboard() {
                let coordinates = this.generateCoordinates()
 
                if (this.checkAvailable(ship, coordinates) === -1) {
-
                   this.placeShip(coordinates.y, coordinates.x, ship, coordinates.rotated)
                   ship.quantity--;
-
                }
             }
          })
@@ -138,16 +136,18 @@ function createGameboard() {
       },
 
       receiveAttack(hitY, hitX) {
-         if (!this.boardArr[hitY][hitX]) {
+
+         if (this.boardArr[hitY][hitX] === null) {
             this.boardArr[hitY][hitX] = 'missed'
-            console.log('missed !!!')
+
             return false
          } else {
             const succesHitIndex = this.boardArr[hitY][hitX].location.findIndex(position =>
                position.y == hitY && position.x == hitX)
+            console.log("hit location ", this.boardArr[hitY][hitX])
             this.boardArr[hitY][hitX].hit(succesHitIndex);
             this.allSunk();
-            console.log('ship hit !!!')
+
             return true
          }
       },
@@ -190,34 +190,84 @@ function createPlayer(name = null) {
          return result
       },
 
-      computerPlay(opponent) {
+      computerPlay(opponent, y = null, x = null, playingAgain = false) {
 
          let result = {
-            played: false,
             hitTarget: false,
             y: -1,
             x: -1
          };
 
-         let y = Math.floor(Math.random() * 9);
-         let x = Math.floor(Math.random() * 9);
-
-
-         if ((this.plays.findIndex(play => play.y === y && play.x === x)) === -1) {
-            console.log('computer playing ', { y, x })
-            if (opponent.gameboard.receiveAttack(y, x)) {
-               result.hitTarget = true
-               result.played = true
+         if (playingAgain) {
+            if (y + 1 < 10 && this.plays.findIndex(play => play.y === y + 1 && play.x === x) === -1) {
+               console.log('computer attacking at ', { y: y + 1, x })
+               if (opponent.gameboard.receiveAttack(y + 1, x)) {
+                  result.hitTarget = true
+                  console.log('computer hit target')
+               } else {
+                  console.log('computer missed')
+               }
+               this.plays.push({ y: y + 1, x });
+               result.y = y + 1;
+               result.x = x;
+            } else if (y - 1 >= 0 && this.plays.findIndex(play => play.y === y - 1 && play.x === x) === -1) {
+               console.log('computer attacking at ', { y: y - 1, x })
+               if (opponent.gameboard.receiveAttack(y - 1, x)) {
+                  console.log('computer hit target')
+                  result.hitTarget = true
+               } else {
+                  console.log('computer missed')
+               }
+               this.plays.push({ y: y - 1, x });
+               result.y = y - 1;
+               result.x = x;
+            } else if (x + 1 < 10 && this.plays.findIndex(play => play.y === y && play.x === x + 1) === -1) {
+               console.log('computer attacking at ', { y, x: x + 1 })
+               if (opponent.gameboard.receiveAttack(y, x + 1)) {
+                  console.log('computer hit target')
+                  result.hitTarget = true
+               } else {
+                  console.log('computer missed')
+               }
+               this.plays.push({ y, x: x + 1 });
+               result.y = y;
+               result.x = x + 1;
+            } else if (x - 1 >= 0 && this.plays.findIndex(play => play.y === y && play.x === x - 1) === -1) {
+               console.log('computer attacking at ', { y, x: x - 1 })
+               if (opponent.gameboard.receiveAttack(y, x - 1)) {
+                  console.log('computer hit target')
+                  result.hitTarget = true
+               } else {
+                  console.log('computer missed')
+               }
+               this.plays.push({ y, x: x - 1 });
+               result.y = y;
+               result.x = x - 1;
             } else {
-               result.played = true
+               console.log('already played nearby squares')
+               return this.computerPlay(opponent)
             }
-            this.plays.push({ y, x });
-         } else {
-            console.log('already played')
-            this.computerPlay(opponent)
+         } else if (!playingAgain) {
+            y = Math.floor(Math.random() * 9);
+            x = Math.floor(Math.random() * 9);
+
+            if ((this.plays.findIndex(play => play.y === y && play.x === x)) === -1) {
+               console.log('computer attacking at ', { y, x })
+               if (opponent.gameboard.receiveAttack(y, x)) {
+                  console.log('computer hit target')
+                  result.hitTarget = true
+               } else {
+                  console.log('computer missed')
+               }
+               this.plays.push({ y, x });
+            } else {
+               console.log('computer already played ', { y, x })
+               return this.computerPlay(opponent)
+            }
+            result.y = y;
+            result.x = x;
          }
-         result.y = y;
-         result.x = x;
+         console.log({ result })
          return result
       },
    }
