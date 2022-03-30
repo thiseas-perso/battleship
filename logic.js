@@ -26,26 +26,26 @@ function createGameboard() {
             length: 5,
             quantity: 1
          },
-         {
-            name: 'Battleship',
-            length: 4,
-            quantity: 1
-         },
-         {
-            name: 'Destroyer',
-            length: 3,
-            quantity: 1
-         },
-         {
-            name: 'Submarine',
-            length: 3,
-            quantity: 2
-         },
-         {
-            name: 'Patrol',
-            length: 2,
-            quantity: 2
-         }
+         /*  {
+             name: 'Battleship',
+             length: 4,
+             quantity: 1
+          },
+          {
+             name: 'Destroyer',
+             length: 3,
+             quantity: 1
+          },
+          {
+             name: 'Submarine',
+             length: 3,
+             quantity: 2
+          },
+          {
+             name: 'Patrol',
+             length: 2,
+             quantity: 2
+          } */
       ],
       boardArr: null,
       initBoard() {
@@ -146,8 +146,6 @@ function createGameboard() {
                position.y == hitY && position.x == hitX)
             console.log("hit location ", this.boardArr[hitY][hitX])
             this.boardArr[hitY][hitX].hit(succesHitIndex);
-            this.allSunk();
-
             return true
          }
       },
@@ -173,12 +171,18 @@ function createPlayer(name = null) {
       humanPlay(opponent, y, x) {
          let result = {
             played: false,
-            hitTarget: false
+            hitTarget: false,
+            end: false
          };
          if ((this.plays.findIndex(play => play.y === y && play.x === x)) === -1) {
             if (opponent.gameboard.receiveAttack(y, x)) {
                result.hitTarget = true
                result.played = true
+               if (opponent.gameboard.allSunk()) {
+                  result.end = true
+                  console.log('ENDDDD')
+                  return result
+               }
             } else {
                result.played = true
             }
@@ -195,8 +199,15 @@ function createPlayer(name = null) {
          let result = {
             hitTarget: false,
             y: -1,
-            x: -1
+            x: -1,
+            end: false
          };
+
+         if (opponent.gameboard.allSunk()) {
+            result.end = true
+            console.log('ENDDDD')
+            return result
+         }
 
          if (playingAgain) {
             if (y + 1 < 10 && this.plays.findIndex(play => play.y === y + 1 && play.x === x) === -1) {

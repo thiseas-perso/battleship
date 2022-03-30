@@ -175,45 +175,53 @@ function play(human, computer) {
       x: null,
       y: null,
    };
-   if (!human.gameboard.allSunk() || !computer.gameboard.allSunk()) {
-      const squares = rightBoard.querySelectorAll('.square');
 
-      squares.forEach(square => {
-         square.addEventListener('click', (e) => {
-            coordinates.y = parseInt(e.target.id[1])
-            coordinates.x = parseInt(e.target.id[4])
-            console.log('humanPlaying ', coordinates)
-            let humanPlayResult = human.humanPlay(computer, coordinates.y, coordinates.x)
-            if (humanPlayResult.played && !humanPlayResult.hitTarget) {
-               square.classList.add('missed')
-               square.innerText = "O"
-               let computerPlayResult = computer.computerPlay(human)
-               while (computerPlayResult.hitTarget) {
-                  console.log('inside while loop')
-                  let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
-                  let y = computerPlayResult.y;
-                  let x = computerPlayResult.x;
-                  hitSquare.classList.add('hit')
-                  hitSquare.innerText = "X"
-                  console.log('DOM computer hit target')
-                  computerPlayResult = computer.computerPlay(human, y, x, true)
-               }
-               if (!computerPlayResult.hitTarget) {
-                  console.log('inside if statement')
-                  let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
-                  hitSquare.classList.add('missed')
-                  hitSquare.innerText = "O"
-                  console.log('DOM computer missed')
-               }
-            } else if (humanPlayResult.played && humanPlayResult.hitTarget) {
+   //  !human.gameboard.allSunk() !computer.gameboard.allSunk()
+   const squares = rightBoard.querySelectorAll('.square');
 
-               square.classList.add('hit')
-               square.innerText = "X"
+   squares.forEach(square => {
+      square.addEventListener('click', (e) => {
+         coordinates.y = parseInt(e.target.id[1])
+         coordinates.x = parseInt(e.target.id[4])
+         console.log('humanPlaying ', coordinates)
+         let humanPlayResult = human.humanPlay(computer, coordinates.y, coordinates.x)
+         if (humanPlayResult.played && !humanPlayResult.hitTarget) {
+            square.classList.add('missed')
+            square.innerText = "O"
+            let computerPlayResult = computer.computerPlay(human)
+            while (computerPlayResult.hitTarget) {
+               if (computerPlayResult.end) {
+                  console.log('game finished')
+                  leftBoard.replaceWith(leftBoard.cloneNode(true))
+                  rightBoard.replaceWith(rightBoard.cloneNode(true))
+               }
+               console.log('inside while loop')
+               let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
+               let y = computerPlayResult.y;
+               let x = computerPlayResult.x;
+               hitSquare.classList.add('hit')
+               hitSquare.innerText = "X"
+               console.log('DOM computer hit target')
+               computerPlayResult = computer.computerPlay(human, y, x, true)
             }
-         })
+            if (!computerPlayResult.hitTarget && !computerPlayResult.end) {
+               console.log('inside if statement')
+               let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
+               hitSquare.classList.add('missed')
+               hitSquare.innerText = "O"
+               console.log('DOM computer missed')
+            }
+         } else if (humanPlayResult.played && humanPlayResult.hitTarget) {
+            square.classList.add('hit')
+            square.innerText = "X"
+            if (humanPlayResult.end) {
+               console.log('game finished')
+               leftBoard.replaceWith(leftBoard.cloneNode(true))
+               rightBoard.replaceWith(rightBoard.cloneNode(true))
+            }
+         }
       })
-
-   }
+   })
 }
 
 form.addEventListener('submit', function (e) {
