@@ -188,14 +188,14 @@ function play(human, computer) {
                square.innerText = "O"
                let computerPlayResult = computer.computerPlay(human)
                while (computerPlayResult.hitTarget) {
-                  let hitSquare = leftBoard.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
+                  let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
                   console.log({ hitSquare })
                   hitSquare.classList.add('hit')
                   hitSquare.innerText = "X"
                   computerPlayResult = computer.computerPlay(human)
                }
                if (!computerPlayResult.hitTarget) {
-                  let hitSquare = leftBoard.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
+                  let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
                   hitSquare.classList.add('missed')
                   hitSquare.innerText = "O"
                   console.log(hitSquare.className)
