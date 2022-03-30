@@ -86,7 +86,7 @@ function displayShips(player) {
 
 
 function selectCoordinates(player) {
-   let ships = selectShips(player)
+   let ships = selectShips()
    const coordinates = {
       x: null,
       y: null,
@@ -99,15 +99,15 @@ function selectCoordinates(player) {
          coordinates.y = parseInt(e.target.id[1])
          coordinates.x = parseInt(e.target.id[4])
          coordinates.rotated = document.querySelector('input[name="orient"]:checked').value == 0 ? false : true
-         placeShips(player, ships, coordinates)
-         ships = selectShips(player)
+         placeShips(player, coordinates)
+         ships = selectShips()
       })
    })
 
 }
 
 
-function selectShips(player) {
+function selectShips() {
    let ships = document.querySelectorAll('.ship-display-row')
    let shipsArr = Array.from(ships)
    let index = shipsArr.findIndex((element) => parseInt(element.id[element.id.length - 1]) > 0)
@@ -128,8 +128,8 @@ function selectShips(player) {
 }
 
 
-function placeShips(player, ships, coordinates) {
-   // let total = ships.reduce((total, item) => parseInt(item.id[item.id.length - 1]) + total, 0);
+function placeShips(player, coordinates) {
+
    let realTotal = player.gameboard.shipsStart.reduce((total, item) => item.quantity + total, 0)
    let selected = document.querySelector('.selected')
    let ship = player.gameboard.shipsStart.find(element => selected.id.includes(element.name));
@@ -177,14 +177,33 @@ function play(human, computer) {
    };
    if (!human.gameboard.allSunk() || !computer.gameboard.allSunk()) {
       const squares = rightBoard.querySelectorAll('.square');
+
       squares.forEach(square => {
          square.addEventListener('click', (e) => {
             coordinates.y = parseInt(e.target.id[1])
             coordinates.x = parseInt(e.target.id[4])
-
             let humanPlayResult = human.humanPlay(computer, coordinates.y, coordinates.x)
             if (humanPlayResult.played && !humanPlayResult.hitTarget) {
-               computer.computerPlay(human)
+               square.classList.add('missed')
+               square.innerText = "O"
+               let computerPlayResult = computer.computerPlay(human)
+               while (computerPlayResult.hitTarget) {
+                  let hitSquare = leftBoard.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
+                  console.log({ hitSquare })
+                  hitSquare.classList.add('hit')
+                  hitSquare.innerText = "X"
+                  computerPlayResult = computer.computerPlay(human)
+               }
+               if (!computerPlayResult.hitTarget) {
+                  let hitSquare = leftBoard.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
+                  hitSquare.classList.add('missed')
+                  hitSquare.innerText = "O"
+                  console.log(hitSquare.className)
+               }
+            } else {
+               console.log({ square })
+               square.classList.add('hit')
+               square.innerText = "X"
             }
          })
       })

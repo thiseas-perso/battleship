@@ -117,14 +117,14 @@ function createGameboard() {
 
       checkAvailable(ship, coordinates) {
          let availability = -1
-         if (coordinates.rotated == false && coordinates.x + ship.length < 10) {
+         if (coordinates.rotated == false && coordinates.x + ship.length <= 10) {
 
             for (let i = 0; i < ship.length; i++) {
                if (this.boardArr[coordinates.y][coordinates.x + i] !== null) {
                   availability++
                }
             }
-         } else if (coordinates.rotated == true && coordinates.y + ship.length < 10) {
+         } else if (coordinates.rotated == true && coordinates.y + ship.length <= 10) {
 
             for (let i = 0; i < ship.length; i++) {
                if (this.boardArr[coordinates.y + i][coordinates.x] !== null) {
@@ -191,28 +191,34 @@ function createPlayer(name = null) {
       },
 
       computerPlay(opponent) {
-         let y = -1;
-         let x = -1;
 
-         function generateCoordinates() {
-            y = Math.floor(Math.random() * 9)
-            x = Math.floor(Math.random() * 9)
-         }
+         let result = {
+            played: false,
+            hitTarget: false,
+            y: -1,
+            x: -1
+         };
 
-         generateCoordinates();
+         let y = Math.floor(Math.random() * 9);
+         let x = Math.floor(Math.random() * 9);
 
 
          if ((this.plays.findIndex(play => play.y === y && play.x === x)) === -1) {
             console.log('computer playing ', { y, x })
             if (opponent.gameboard.receiveAttack(y, x)) {
-               this.plays.push({ y, x });
-               this.computerPlay(opponent)
+               result.hitTarget = true
+               result.played = true
+            } else {
+               result.played = true
             }
             this.plays.push({ y, x });
          } else {
             console.log('already played')
             this.computerPlay(opponent)
          }
+         result.y = y;
+         result.x = x;
+         return result
       },
    }
 }
