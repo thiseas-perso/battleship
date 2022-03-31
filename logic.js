@@ -26,26 +26,27 @@ function createGameboard() {
             length: 5,
             quantity: 1
          },
-         /*  {
-             name: 'Battleship',
-             length: 4,
-             quantity: 1
-          },
-          {
-             name: 'Destroyer',
-             length: 3,
-             quantity: 1
-          },
-          {
-             name: 'Submarine',
-             length: 3,
-             quantity: 2
-          },
-          {
-             name: 'Patrol',
-             length: 2,
-             quantity: 2
-          } */
+         {
+            name: 'Battleship',
+            length: 4,
+            quantity: 1
+         },
+         {
+            name: 'Destroyer',
+            length: 3,
+            quantity: 1
+         },
+         {
+            name: 'Submarine',
+            length: 3,
+            quantity: 2
+         },
+         {
+            name: 'Patrol',
+            length: 2,
+            quantity: 2
+
+         }
       ],
       boardArr: null,
       initBoard() {
@@ -81,12 +82,12 @@ function createGameboard() {
 
       placeHumanShips(coordinates, ship) {
 
-         if (this.checkAvailable(ship, coordinates) === -1) {
+         if (this.checkAvailable(ship, coordinates) === -1 && ship.quantity > 0) {
+
             this.placeShip(coordinates.y, coordinates.x, ship, coordinates.rotated)
             ship.quantity--;
             return true
          } else {
-
             return false
          }
       },
@@ -144,14 +145,14 @@ function createGameboard() {
          } else {
             const succesHitIndex = this.boardArr[hitY][hitX].location.findIndex(position =>
                position.y == hitY && position.x == hitX)
-            console.log("hit location ", this.boardArr[hitY][hitX])
+
             this.boardArr[hitY][hitX].hit(succesHitIndex);
             return true
          }
       },
       allSunk() {
          if (this.shipsArr.length && this.shipsArr.every(ship => ship.sunk === true)) {
-            console.log('all sunk')
+
             return true
          } else {
             return false
@@ -180,7 +181,7 @@ function createPlayer(name = null) {
                result.played = true
                if (opponent.gameboard.allSunk()) {
                   result.end = true
-                  console.log('ENDDDD')
+
                   return result
                }
             } else {
@@ -189,7 +190,7 @@ function createPlayer(name = null) {
             this.plays.push({ y, x });
 
          } else {
-            console.log('already played')
+
          }
          return result
       },
@@ -205,57 +206,43 @@ function createPlayer(name = null) {
 
          if (opponent.gameboard.allSunk()) {
             result.end = true
-            console.log('ENDDDD')
             return result
          }
 
          if (playingAgain) {
             if (y + 1 < 10 && this.plays.findIndex(play => play.y === y + 1 && play.x === x) === -1) {
-               console.log('computer attacking at ', { y: y + 1, x })
+
                if (opponent.gameboard.receiveAttack(y + 1, x)) {
                   result.hitTarget = true
-                  console.log('computer hit target')
-               } else {
-                  console.log('computer missed')
                }
                this.plays.push({ y: y + 1, x });
                result.y = y + 1;
                result.x = x;
             } else if (y - 1 >= 0 && this.plays.findIndex(play => play.y === y - 1 && play.x === x) === -1) {
-               console.log('computer attacking at ', { y: y - 1, x })
+
                if (opponent.gameboard.receiveAttack(y - 1, x)) {
-                  console.log('computer hit target')
                   result.hitTarget = true
-               } else {
-                  console.log('computer missed')
                }
                this.plays.push({ y: y - 1, x });
                result.y = y - 1;
                result.x = x;
             } else if (x + 1 < 10 && this.plays.findIndex(play => play.y === y && play.x === x + 1) === -1) {
-               console.log('computer attacking at ', { y, x: x + 1 })
+
                if (opponent.gameboard.receiveAttack(y, x + 1)) {
-                  console.log('computer hit target')
                   result.hitTarget = true
-               } else {
-                  console.log('computer missed')
                }
                this.plays.push({ y, x: x + 1 });
                result.y = y;
                result.x = x + 1;
             } else if (x - 1 >= 0 && this.plays.findIndex(play => play.y === y && play.x === x - 1) === -1) {
-               console.log('computer attacking at ', { y, x: x - 1 })
+
                if (opponent.gameboard.receiveAttack(y, x - 1)) {
-                  console.log('computer hit target')
                   result.hitTarget = true
-               } else {
-                  console.log('computer missed')
                }
                this.plays.push({ y, x: x - 1 });
                result.y = y;
                result.x = x - 1;
             } else {
-               console.log('already played nearby squares')
                return this.computerPlay(opponent)
             }
          } else if (!playingAgain) {
@@ -263,22 +250,18 @@ function createPlayer(name = null) {
             x = Math.floor(Math.random() * 9);
 
             if ((this.plays.findIndex(play => play.y === y && play.x === x)) === -1) {
-               console.log('computer attacking at ', { y, x })
+
                if (opponent.gameboard.receiveAttack(y, x)) {
-                  console.log('computer hit target')
                   result.hitTarget = true
-               } else {
-                  console.log('computer missed')
                }
                this.plays.push({ y, x });
             } else {
-               console.log('computer already played ', { y, x })
                return this.computerPlay(opponent)
             }
             result.y = y;
             result.x = x;
          }
-         console.log({ result })
+
          return result
       },
    }

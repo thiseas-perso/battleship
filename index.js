@@ -1,1 +1,1 @@
-import { gameFlow } from './game.js'
+import { setupGame } from './game.js'

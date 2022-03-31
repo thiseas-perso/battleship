@@ -1,4 +1,4 @@
-import { gameFlow } from "./game.js"
+import { setupGame, launchGame } from "./game.js"
 
 
 const leftBoard = document.querySelector("#leftBoard")
@@ -86,12 +86,15 @@ function displayShips(player) {
 
 
 function selectCoordinates(player) {
+
    let ships = selectShips()
+
    const coordinates = {
       x: null,
       y: null,
       rotated: null
    };
+
 
    const squares = leftBoard.querySelectorAll('.square');
    squares.forEach(square => {
@@ -104,6 +107,7 @@ function selectCoordinates(player) {
       })
    })
 
+
 }
 
 
@@ -114,16 +118,28 @@ function selectShips() {
    if (index >= 0) {
       ships[index].classList.add('selected')
    } else {
-      document.querySelector('#banner').innerText = 'Start playing!'
+      document.querySelector('#banner').innerText = 'All ships are in position!'
       document.querySelector('.ship-display').remove()
       document.querySelector('.selectOrient').remove()
       leftBoard.replaceWith(leftBoard.cloneNode(true))
-
+      let button = document.createElement('button')
+      button.innerText = 'Play!'
+      button.setAttribute('id', 'play-btn')
+      body.appendChild(button)
+      button.addEventListener('click', (e) => {
+         launchGame()
+         button.remove()
+         banner.innerText = 'Good luck!'
+      })
    }
-   ships.forEach(ship => ship.addEventListener('click', (e) => {
-      ships.forEach(el => el.classList.remove('selected'));
-      ship.classList.add('selected')
-   }))
+   for (let ship of ships) {
+      if (ship.id[ship.id.length - 1] > 0) {
+         ship.addEventListener('click', (e) => {
+            ships.forEach(el => el.classList.remove('selected'));
+            ship.classList.add('selected')
+         })
+      }
+   }
    return shipsArr
 }
 
@@ -145,7 +161,7 @@ function placeShips(player, coordinates) {
       let old = document.querySelector('.ship-display')
       leftScreen.removeChild(old)
       displayShips(player)
-      console.log('try again')
+
    }
 
 }
@@ -176,14 +192,13 @@ function play(human, computer) {
       y: null,
    };
 
-   //  !human.gameboard.allSunk() !computer.gameboard.allSunk()
    const squares = rightBoard.querySelectorAll('.square');
 
    squares.forEach(square => {
       square.addEventListener('click', (e) => {
          coordinates.y = parseInt(e.target.id[1])
          coordinates.x = parseInt(e.target.id[4])
-         console.log('humanPlaying ', coordinates)
+
          let humanPlayResult = human.humanPlay(computer, coordinates.y, coordinates.x)
          if (humanPlayResult.played && !humanPlayResult.hitTarget) {
             square.classList.add('missed')
@@ -191,42 +206,41 @@ function play(human, computer) {
             let computerPlayResult = computer.computerPlay(human)
             while (computerPlayResult.hitTarget) {
                if (computerPlayResult.end) {
-                  console.log('game finished')
-                  leftBoard.replaceWith(leftBoard.cloneNode(true))
-                  rightBoard.replaceWith(rightBoard.cloneNode(true))
+                  announceEnd(computer)
                }
-               console.log('inside while loop')
+
                let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
                let y = computerPlayResult.y;
                let x = computerPlayResult.x;
                hitSquare.classList.add('hit')
                hitSquare.innerText = "X"
-               console.log('DOM computer hit target')
                computerPlayResult = computer.computerPlay(human, y, x, true)
             }
             if (!computerPlayResult.hitTarget && !computerPlayResult.end) {
-               console.log('inside if statement')
+
                let hitSquare = document.querySelector(`#y${computerPlayResult.y}-x${computerPlayResult.x}`)
                hitSquare.classList.add('missed')
                hitSquare.innerText = "O"
-               console.log('DOM computer missed')
+
             }
          } else if (humanPlayResult.played && humanPlayResult.hitTarget) {
             square.classList.add('hit')
             square.innerText = "X"
             if (humanPlayResult.end) {
-               console.log('game finished')
-               leftBoard.replaceWith(leftBoard.cloneNode(true))
-               rightBoard.replaceWith(rightBoard.cloneNode(true))
+               announceEnd(human)
             }
          }
       })
    })
+
 }
+
+
+
 
 form.addEventListener('submit', function (e) {
    e.preventDefault()
-   gameFlow(playerName.value)
+   setupGame(playerName.value)
    playerName.value = ''
    form.setAttribute('class', 'hidden')
    let banner = document.createElement('div')
@@ -235,7 +249,18 @@ form.addEventListener('submit', function (e) {
    body.appendChild(banner)
 })
 
-
+function announceEnd(winner) {
+   leftBoard.replaceWith(leftBoard.cloneNode(true))
+   rightBoard.replaceWith(rightBoard.cloneNode(true))
+   let banner = document.querySelector('#banner')
+   banner.classList.add('end-game')
+   if (winner.name) {
+      banner.innerText = `You won!! Good job ${winner.name}.`
+   } else {
+      banner.innerText = `You lost..`
+   }
+   console.log('game finished')
+}
 
 
 

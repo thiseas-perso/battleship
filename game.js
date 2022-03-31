@@ -1,25 +1,26 @@
 import { displayShips, selectCoordinates, displayButtons, play } from './dom.js'
-import { createShip, createGameboard, createPlayer } from './logic.js'
+import { createPlayer } from './logic.js'
 
 
-function gameFlow(player) {
-   const humanPlayer = createPlayer(player);
-   const computer = createPlayer();
+let humanPlayer, computer;
+function setupGame(player) {
+   humanPlayer = createPlayer(player);
+   computer = createPlayer();
    humanPlayer.gameboard.initBoard();
    computer.gameboard.initBoard();
    displayButtons(humanPlayer)
    displayShips(humanPlayer);
    computer.gameboard.placeComputerShips()
-   console.log({ computer, humanPlayer })
    selectCoordinates(humanPlayer)
+}
+
+function launchGame() {
    play(humanPlayer, computer)
-   return { humanPlayer, computer }
 }
 
 
 
-
-export { gameFlow }
+export { setupGame, launchGame }
 
 
 
